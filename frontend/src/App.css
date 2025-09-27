@@ -9,14 +9,14 @@
 
 /* Hero Section */
 .hero-section {
-  flex: 1;
+  flex: 2;
   background: linear-gradient(135deg, #c9ff4a 0%, #89e0ef 50%, #036ffd 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem 1.5rem;
   position: relative;
-  min-height: 60vh;
+  min-height: 66vh;
 }
 
 .hero-content {
@@ -65,12 +65,13 @@
 
 /* Connect Wallet Section */
 .connect-section {
+  flex: 1;
   background: #f5f5f5;
   padding: 3rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 40vh;
+  min-height: 34vh;
 }
 
 .connect-content {
@@ -131,7 +132,7 @@
 @media (max-width: 480px) {
   .hero-section {
     padding: 1.5rem 1rem;
-    min-height: 55vh;
+    min-height: 60vh;
   }
 
   .logo {
@@ -150,7 +151,7 @@
 
   .connect-section {
     padding: 2rem 1rem;
-    min-height: 45vh;
+    min-height: 40vh;
   }
 
   .connect-content button,
