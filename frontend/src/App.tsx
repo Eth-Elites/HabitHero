@@ -6,7 +6,6 @@ function App() {
 
   const { data: greeting } = useFlowQuery({
     cadence: `access(all) fun main(): String { return "Hello, Flow!" }`,
-    args: (arg, t) => [],
   });
 
   return (
