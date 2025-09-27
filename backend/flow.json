@@ -1,25 +1,32 @@
 {
-	"contracts": {
-		"Counter": {
-			"source": "cadence/contracts/Counter.cdc",
-			"aliases": {
-				"testing": "0000000000000007"
-			}
-		}
-	},
-	"networks": {
-		"emulator": "127.0.0.1:3569",
-		"mainnet": "access.mainnet.nodes.onflow.org:9000",
-		"testing": "127.0.0.1:3569",
-		"testnet": "access.devnet.nodes.onflow.org:9000"
-	},
-	"accounts": {
-		"emulator-account": {
-			"address": "f8d6e0586b0a20c7",
-			"key": {
-				"type": "file",
-				"location": "emulator-account.pkey"
-			}
-		}
-	}
+  "networks": {
+    "emulator": "127.0.0.1:3569",
+    "mainnet": "access.mainnet.nodes.onflow.org:9000",
+    "testnet": "access.devnet.nodes.onflow.org:9000"
+  },
+  "accounts": {
+    "emulator-account": {
+      "address": "f8d6e0586b0a20c7",
+      "key": "f0cf61b7d6eb39ea7eba3da65ef7e9a4407ca2fe5c841e093995157b2a5853bc"
+    },
+    "testnet-account": {
+      "address": "0x073e2f294371acd0",
+      "key": {
+        "type": "hex",
+        "index": 0,
+        "signatureAlgorithm": "ECDSA_P256",
+        "hashAlgorithm": "SHA3_256",
+        "privateKey": "ac9ebd9d0b0b553933b1357d0b9e9a65d55e002ce235db5bd5331d92c313fe07"
+      }
+    }
+  },
+  "contracts": {
+    "UserReg": "./cadence/contracts/UserReg.cdc",
+	"INFT": "./cadence/contracts/INFT.cdc"
+  },
+  "deployments": {
+    "testnet": {
+      "testnet-account": ["UserReg", "INFT"]
+    }
+  }
 }

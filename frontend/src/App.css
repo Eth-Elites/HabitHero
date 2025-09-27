@@ -3,14 +3,13 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(
-    135deg,
-    #a8e6a1 0%,
-    #7dd3f0 25%,
-    #88c8e6 50%,
-    #b8a8e6 75%,
-    #d4a5d8 100%
-  );
+  background-image: url("/BG.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  min-height: 100vh;
+  background-attachment: fixed;
   font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Roboto", sans-serif;
   max-width: 360px;
