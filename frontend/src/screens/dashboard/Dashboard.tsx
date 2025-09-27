@@ -1,9 +1,11 @@
 import { useFlowCurrentUser } from "@onflow/react-sdk";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function DashboardScreen() {
   const { user } = useFlowCurrentUser();
   const [activeTab, setActiveTab] = useState("Daily");
+  const navigate = useNavigate();
 
   const habits = [
     {
@@ -107,7 +109,11 @@ export function DashboardScreen() {
         {/* Habits List */}
         <div className="habits-list">
           {habits.map((habit) => (
-            <div key={habit.id} className="habit-card">
+            <div
+              key={habit.id}
+              className="habit-card"
+              onClick={() => navigate(`/habit/${habit.id}`)}
+            >
               <div className="habit-content">
                 <h3 className="habit-title">{habit.title}</h3>
                 <p className="habit-description">{habit.description}</p>
