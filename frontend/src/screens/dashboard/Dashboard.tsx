@@ -1,9 +1,11 @@
 import { useFlowCurrentUser } from "@onflow/react-sdk";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function DashboardScreen() {
   const { user } = useFlowCurrentUser();
   const [activeTab, setActiveTab] = useState("Daily");
+  const navigate = useNavigate();
 
   const habits = [
     {
@@ -74,7 +76,10 @@ export function DashboardScreen() {
       <div className="habits-section">
         <div className="habits-header">
           <h2 className="habits-title">Your Habits</h2>
-          <button className="add-habit-btn">
+          <button
+            className="add-habit-btn"
+            onClick={() => navigate("/create-habit")}
+          >
             <span className="plus-icon">+</span>
             Habit
           </button>
@@ -102,18 +107,22 @@ export function DashboardScreen() {
           </button>
         </div>
 
-        <div className="nav-divider"></div>
-
         {/* Habits List */}
         <div className="habits-list">
           {habits.map((habit) => (
-            <div key={habit.id} className="habit-card">
+            <div
+              key={habit.id}
+              className="habit-card"
+              onClick={() => navigate(`/habit/${habit.id}`)}
+            >
               <div className="habit-content">
                 <h3 className="habit-title">{habit.title}</h3>
                 <p className="habit-description">{habit.description}</p>
               </div>
               <div className="habit-streak">
-                <span className="flame-icon">🔥</span>
+                <span className="flame-icon">
+                  <img src="/flame.svg" alt="flame" />
+                </span>
                 <span className="streak-number">{habit.streak}</span>
               </div>
             </div>
