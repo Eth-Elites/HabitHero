@@ -17,21 +17,14 @@ function App() {
           <p className="tagline">
             Your intelligent NFT coach for building unstoppable habits
           </p>
-        </div>
-      </section>
-
-      {/* Separator */}
-      <div className="separator"></div>
-
-      {/* Connect Wallet Section */}
-      <section className="connect-section">
-        <div className="connect-content">
-          <Connect />
-          {user?.loggedIn && (
-            <div className="welcome-message">
-              <p>Welcome, {user.addr}!</p>
-            </div>
-          )}
+          <div className="flex flex-col h-full m-4">
+            <Connect />
+            {user?.loggedIn && (
+              <div className="welcome-message">
+                <p>Welcome, {user.addr}!</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </div>
