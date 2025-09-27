@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+// import { ethers } from "ethers";
 
 export function CreateHabitScreen() {
   const navigate = useNavigate();
@@ -9,6 +10,23 @@ export function CreateHabitScreen() {
     "Daily" | "Weekly" | "Monthly" | null
   >(null);
 
+  const [Address, setAddress] = useState("")
+  const { ethereum } = window as any;
+  console.log(ethereum);
+
+  const connectWallet = async () => {
+    try {
+      if (!ethereum) return alert("Please install Metamask");
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      setAddress(accounts[0]);
+    } catch (error) {
+      console.log(error);
+
+      throw new Error("No ethereum object");
+    }
+  }
   const handleCreateHabit = () => {
     if (habitTitle.trim() && habitDescription.trim() && selectedFrequency) {
       // TODO: Implement habit creation logic
@@ -34,7 +52,8 @@ export function CreateHabitScreen() {
         </button>
         <h1 className="create-habit-title">Create Habit</h1>
       </div>
-
+      <button className="cursor-pointer" onClick={connectWallet}>connect metamask</button>
+      <span>Address: {Address} </span>
       {/* Form */}
       <div className="create-habit-form">
         {/* Habit Title */}
