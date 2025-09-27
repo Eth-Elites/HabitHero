@@ -3,14 +3,16 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(135deg, #c9ff4a 0%, #89e0ef 50%, #036ffd 100%);
   font-family: "Sansation", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Roboto", sans-serif;
+  max-width: 360px;
+  padding: 1.5rem;
 }
 
 /* Hero Section */
 .hero-section {
   flex: 2;
-  background: linear-gradient(135deg, #c9ff4a 0%, #89e0ef 50%, #036ffd 100%);
   display: flex;
   align-items: center;
   justify-content: center;
