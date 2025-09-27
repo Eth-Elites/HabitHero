@@ -2,6 +2,10 @@ import { ethers } from "ethers";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHabitNFT } from "../../services/flowService";
+import {
+  ipfsService,
+  type IPFSUploadResponse,
+} from "../../services/ipfsService";
 //@ts-expect-error it exists
 import { contract_abi, contract_byte_code } from "../../../utils/contract.js";
 export function CreateHabitScreen() {
@@ -15,12 +19,15 @@ export function CreateHabitScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [ethAddress, setEthAddress] = useState<string | null>(null);
-  const { deployNft, isPending } = useHabitNFT();
+  const [ipfsHash, setIpfsHash] = useState<string | null>(null);
+  const [ipfsUrl, setIpfsUrl] = useState<string | null>(null);
+  const { isPending } = useHabitNFT();
 
-  const [Address, setAddress] = useState("")
-  const [contractAddress, setContractAddress] = useState()
-  const { ethereum } = window as any;
+  const [Address, setAddress] = useState("");
+  const [contractAddress, setContractAddress] = useState();
+  const { ethereum } = window as {
+    ethereum?: { request: (args: { method: string }) => Promise<string[]> };
+  };
   console.log(ethereum);
 
   const connectWallet = async () => {
@@ -35,7 +42,7 @@ export function CreateHabitScreen() {
 
       throw new Error("No ethereum object");
     }
-  }
+  };
 
   // const deployContract = async (
   //   title: string,
@@ -48,29 +55,38 @@ export function CreateHabitScreen() {
   // setContractAddress(contract.target)
   // }
   async function deployContract(name: string, symbol: string) {
-  if (!ethereum) throw new Error("No wallet found");
+    if (!ethereum) throw new Error("No wallet found");
 
-  // 1. Connect to MetaMask
-  const provider = new ethers.BrowserProvider(ethereum);
-  const signer = await provider.getSigner();
+    try {
+      // 1. Connect to MetaMask
+      const provider = new ethers.BrowserProvider(ethereum);
+      const signer = await provider.getSigner();
 
-  // 2. Prepare the factory with signer
-  const factory = new ethers.ContractFactory(contract_abi, contract_byte_code, signer);
+      // 2. Prepare the factory with signer
+      const factory = new ethers.ContractFactory(
+        contract_abi,
+        contract_byte_code,
+        signer
+      );
 
-  // 3. Deploy
-  const contract = await factory.deploy(name, symbol);
+      // 3. Deploy
+      const contract = await factory.deploy(name, symbol);
 
-  // 4. Wait for confirmation
-  await contract.waitForDeployment();
+      // 4. Wait for confirmation
+      await contract.waitForDeployment();
 
-  //@ts-expect-error it exists
-  setContractAddress(contract.target); // contract address
-}
+      //@ts-expect-error it exists
+      setContractAddress(contract.target); // contract address
+      setCurrentStep(2);
+    } catch {
+      setError("Error deploying contract");
+    }
+  }
 
   const handleNextStep = async () => {
     if (habitTitle.trim()) {
       try {
-        const txId = await deployContract(habitTitle, habitTitle)
+        const txId = await deployContract(habitTitle, habitTitle);
         console.log("Contract deployed at address:", txId);
       } catch (err) {
         console.error("Error creating habit:", err);
@@ -96,25 +112,33 @@ export function CreateHabitScreen() {
 
     setIsLoading(true);
     setError(null);
+
+    try {
+      // Upload logo.svg to IPFS
+      console.log("Uploading logo.svg to IPFS...");
+      const uploadResult: IPFSUploadResponse =
+        await ipfsService.uploadImageFromPath("/logo.svg");
+
+      console.log("IPFS upload successful:", uploadResult);
+      setIpfsHash(uploadResult.data.hash);
+      setIpfsUrl(uploadResult.data.public_url);
+
+      // Here you can add additional logic to create the habit NFT with the IPFS hash
+      // For now, we'll just show success
+      setSuccess(true);
+      console.log("IPFS upload successful:", uploadResult);
+    } catch (err) {
+      console.error("Error uploading to IPFS:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to upload image to IPFS"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const isStep1Valid = habitTitle.trim();
   const isStep2Valid = habitDescription.trim() && selectedFrequency;
-  // --- Check MetaMask accounts
-  const checkMetaMaskAccounts = async () => {
-    try {
-      //@ts-expect-error it exists
-      const accounts = await window.ethereum.request({
-        method: "eth_accounts",
-      });
-      console.log("All MetaMask accounts:", accounts);
-      return accounts;
-    } catch (error) {
-      console.error("Error getting accounts:", error);
-      return [];
-    }
-  };
-
 
   if (success) {
     return (
@@ -131,7 +155,31 @@ export function CreateHabitScreen() {
             <p className="text-gray-600 mb-4">
               Your habit has been created as an NFT on the Flow blockchain.
             </p>
-            <p className="text-sm text-gray-500">Redirecting to dashboard...</p>
+
+            {ipfsHash && (
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <h3 className="text-lg font-semibold mb-2">
+                  IPFS Upload Details
+                </h3>
+                <p className="text-sm text-gray-600 mb-2">
+                  <strong>Hash:</strong> {ipfsHash}
+                </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  <strong>Public URL:</strong>
+                  <a
+                    href={ipfsUrl || undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 ml-1"
+                  >
+                    {ipfsUrl}
+                  </a>
+                </p>
+                <p className="text-sm text-gray-500">
+                  Logo.svg has been uploaded to IPFS successfully!
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -166,21 +214,18 @@ export function CreateHabitScreen() {
             <div className="form-group">
               <div className="mb-4 p-4 border rounded-lg bg-gray-50">
                 <h3 className="text-lg font-semibold mb-2">Connect MetaMask</h3>
-                {!ethAddress ? (
+                {!Address ? (
                   <button
                     onClick={connectWallet}
                     className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
                   >
                     🦊 Connect MetaMask
-                    <br/>
-                    {Address}
                   </button>
-
                 ) : (
                   <div className="text-green-600">
                     <p className="font-medium">✅ Connected to MetaMask</p>
                     <p className="text-sm text-gray-600 mt-1">
-                      Address: {ethAddress.slice(0, 6)}...{ethAddress.slice(-4)}
+                      Address: {Address.slice(0, 6)}...{Address.slice(-4)}
                     </p>
                   </div>
                 )}
@@ -288,7 +333,7 @@ export function CreateHabitScreen() {
                 !isStep2Valid || isLoading || isPending || currentStep !== 2
               }
             >
-              {isLoading || isPending ? "Minting NFT..." : "Create Habit"}
+              {isLoading || isPending ? "Uploading to IPFS..." : "Create Habit"}
             </button>
           </div>
         )}
