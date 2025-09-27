@@ -1,7 +1,9 @@
 import { ethers } from "ethers";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useHabitNFT } from "../../services/flowService";
+//@ts-expect-error it exists
+import { contract_abi, contract_byte_code } from "../../../utils/contract.js";
 export function CreateHabitScreen() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -10,22 +12,131 @@ export function CreateHabitScreen() {
   const [selectedFrequency, setSelectedFrequency] = useState<
     "Daily" | "Weekly" | "Monthly" | null
   >(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [ethAddress, setEthAddress] = useState<string | null>(null);
+  const { deployNft, isPending } = useHabitNFT();
 
-  const handleCreateHabit = () => {
-    if (habitTitle.trim() && habitDescription.trim() && selectedFrequency) {
-      // TODO: Implement habit creation logic
-      console.log("Creating habit:", {
-        habitTitle,
-        habitDescription,
-        selectedFrequency,
+  const [Address, setAddress] = useState("")
+  const [contractAddress, setContractAddress] = useState()
+  const { ethereum } = window as any;
+  console.log(ethereum);
+
+  const connectWallet = async () => {
+    try {
+      if (!ethereum) return alert("Please install Metamask");
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
       });
-      // Navigate back to dashboard
-      navigate("/dashboard");
+      setAddress(accounts[0]);
+    } catch (error) {
+      console.log(error);
+
+      throw new Error("No ethereum object");
+    }
+  }
+
+  // const deployContract = async (
+  //   title: string,
+  //   nickName: string
+  // ) => {
+  //   //@ts-expect-error it exists
+  //   const factory = new ethers.ContractFactory(contract_abi, contract_byte_code, Address);
+  // const contract = await factory.deploy(title, nickName); // This already waits for deployment
+  // //@ts-expect-error it exists
+  // setContractAddress(contract.target)
+  // }
+  async function deployContract(name: string, symbol: string) {
+  if (!ethereum) throw new Error("No wallet found");
+
+  // 1. Connect to MetaMask
+  const provider = new ethers.BrowserProvider(ethereum);
+  const signer = await provider.getSigner();
+
+  // 2. Prepare the factory with signer
+  const factory = new ethers.ContractFactory(contract_abi, contract_byte_code, signer);
+
+  // 3. Deploy
+  const contract = await factory.deploy(name, symbol);
+
+  // 4. Wait for confirmation
+  await contract.waitForDeployment();
+
+  //@ts-expect-error it exists
+  setContractAddress(contract.target); // contract address
+}
+
+  const handleNextStep = async () => {
+    if (habitTitle.trim()) {
+      try {
+        const txId = await deployContract(habitTitle, habitTitle)
+        console.log("Contract deployed at address:", txId);
+      } catch (err) {
+        console.error("Error creating habit:", err);
+        setError(err instanceof Error ? err.message : "Failed to create habit");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setError("Please enter a habit title");
     }
   };
 
-  const isFormValid =
-    habitTitle.trim() && habitDescription.trim() && selectedFrequency;
+  const handlePreviousStep = () => {
+    setCurrentStep(1);
+    setError(null);
+  };
+
+  const handleCreateHabit = async () => {
+    if (!habitTitle.trim() || !habitDescription.trim() || !selectedFrequency) {
+      setError("Please fill in all fields before creating the habit");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+  };
+
+  const isStep1Valid = habitTitle.trim();
+  const isStep2Valid = habitDescription.trim() && selectedFrequency;
+  // --- Check MetaMask accounts
+  const checkMetaMaskAccounts = async () => {
+    try {
+      //@ts-expect-error it exists
+      const accounts = await window.ethereum.request({
+        method: "eth_accounts",
+      });
+      console.log("All MetaMask accounts:", accounts);
+      return accounts;
+    } catch (error) {
+      console.error("Error getting accounts:", error);
+      return [];
+    }
+  };
+
+
+  if (success) {
+    return (
+      <div className="create-habit-container">
+        <div className="create-habit-header">
+          <h1 className="create-habit-title">Habit Created!</h1>
+        </div>
+        <div className="create-habit-form">
+          <div className="text-center">
+            <div className="text-green-500 text-6xl mb-4">✓</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              Habit NFT Minted Successfully!
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Your habit has been created as an NFT on the Flow blockchain.
+            </p>
+            <p className="text-sm text-gray-500">Redirecting to dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="create-habit-container">
@@ -46,8 +157,7 @@ export function CreateHabitScreen() {
           </div>
         </div>
       </div>
-      <button className="cursor-pointer" onClick={connectWallet}>connect metamask</button>
-      <span>Address: {Address} </span>
+
       {/* Form */}
       <div className="create-habit-form">
         {currentStep === 1 && (
@@ -58,11 +168,14 @@ export function CreateHabitScreen() {
                 <h3 className="text-lg font-semibold mb-2">Connect MetaMask</h3>
                 {!ethAddress ? (
                   <button
-                    onClick={loginEth}
+                    onClick={connectWallet}
                     className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
                   >
                     🦊 Connect MetaMask
+                    <br/>
+                    {Address}
                   </button>
+
                 ) : (
                   <div className="text-green-600">
                     <p className="font-medium">✅ Connected to MetaMask</p>
@@ -87,6 +200,7 @@ export function CreateHabitScreen() {
                 onChange={(e) => setHabitTitle(e.target.value)}
                 autoFocus
               />
+              <span>contract address: {contractAddress} </span>
             </div>
           </>
         )}
