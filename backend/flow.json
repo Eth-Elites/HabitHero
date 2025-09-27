@@ -13,13 +13,6 @@
 			"address": "f8d6e0586b0a20c7",
 			"key": "f0cf61b7d6eb39ea7eba3da65ef7e9a4407ca2fe5c841e093995157b2a5853bc"
 		},
-		"keshav": {
-			"address": "89d85568a7d1f195",
-			"key": {
-				"type": "file",
-				"location": "keshav.pkey"
-			}
-		},
 		"testnet-account": {
 			"address": "073e2f294371acd0",
 			"key": "ac9ebd9d0b0b553933b1357d0b9e9a65d55e002ce235db5bd5331d92c313fe07"
