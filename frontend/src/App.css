@@ -163,11 +163,238 @@
   }
 }
 
+/* Profile Card */
+.profile-card {
+  background: linear-gradient(135deg, #e8d5f2 0%, #f0e6f7 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-picture {
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ff6b35 100%);
+  border: 2px solid rgba(139, 69, 19, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.username {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 0.5rem 0;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 0.5rem 0;
+}
+
+.progress-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b45d6 0%, #a855f7 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Habits Section */
+.habits-section {
+  padding: 0;
+}
+
+.habits-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.habits-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
+
+.add-habit-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.add-habit-btn:hover {
+  background: #333;
+  transform: translateY(-1px);
+}
+
+.plus-icon {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1rem;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-tab.active {
+  color: #8b45d6;
+}
+
+.nav-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #8b45d6;
+  border-radius: 2px 2px 0 0;
+}
+
+.nav-tab:hover:not(.active) {
+  color: #333;
+}
+
+.nav-divider {
+  height: 1px;
+  background-color: #e5e5e5;
+  margin-bottom: 1.5rem;
+}
+
+/* Habits List */
+.habits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.habit-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.habit-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.habit-content {
+  flex: 1;
+}
+
+.habit-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 0.25rem 0;
+}
+
+.habit-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.habit-streak {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.flame-icon {
+  font-size: 1rem;
+}
+
+.streak-number {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+}
+
 /* Ensure no desktop/tablet styles */
 @media (min-width: 768px) {
   .mobile-app {
     max-width: 480px;
     margin: 0 auto;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboard-container {
+    max-width: 480px;
   }
 }

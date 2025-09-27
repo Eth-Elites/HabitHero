@@ -1,7 +1,9 @@
 import { useFlowCurrentUser } from "@onflow/react-sdk";
+import { useState } from "react";
 
 export function DashboardScreen() {
   const { user } = useFlowCurrentUser();
+  const [activeTab, setActiveTab] = useState("Daily");
 
   const habits = [
     {
@@ -46,11 +48,9 @@ export function DashboardScreen() {
       <div className="profile-card">
         <div className="profile-section">
           <div className="profile-picture">
-            <img
-              src="https://via.placeholder.com/80x80/4A90E2/FFFFFF?text=🐵"
-              alt="Profile"
-              className="profile-avatar"
-            />
+            <div className="profile-avatar">
+              <span style={{ fontSize: "2rem" }}>🐵</span>
+            </div>
           </div>
           <div className="profile-info">
             <h2 className="username">{user?.addr || "yash.eth"}</h2>
@@ -82,9 +82,24 @@ export function DashboardScreen() {
 
         {/* Navigation Tabs */}
         <div className="nav-tabs">
-          <button className="nav-tab active">Daily</button>
-          <button className="nav-tab">Weekly</button>
-          <button className="nav-tab">Monthly</button>
+          <button
+            className={`nav-tab ${activeTab === "Daily" ? "active" : ""}`}
+            onClick={() => setActiveTab("Daily")}
+          >
+            Daily
+          </button>
+          <button
+            className={`nav-tab ${activeTab === "Weekly" ? "active" : ""}`}
+            onClick={() => setActiveTab("Weekly")}
+          >
+            Weekly
+          </button>
+          <button
+            className={`nav-tab ${activeTab === "Monthly" ? "active" : ""}`}
+            onClick={() => setActiveTab("Monthly")}
+          >
+            Monthly
+          </button>
         </div>
 
         <div className="nav-divider"></div>
