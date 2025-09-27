@@ -76,7 +76,10 @@ export function DashboardScreen() {
       <div className="habits-section">
         <div className="habits-header">
           <h2 className="habits-title">Your Habits</h2>
-          <button className="add-habit-btn">
+          <button
+            className="add-habit-btn"
+            onClick={() => navigate("/create-habit")}
+          >
             <span className="plus-icon">+</span>
             Habit
           </button>
@@ -104,8 +107,6 @@ export function DashboardScreen() {
           </button>
         </div>
 
-        <div className="nav-divider"></div>
-
         {/* Habits List */}
         <div className="habits-list">
           {habits.map((habit) => (
@@ -119,7 +120,9 @@ export function DashboardScreen() {
                 <p className="habit-description">{habit.description}</p>
               </div>
               <div className="habit-streak">
-                <span className="flame-icon">🔥</span>
+                <span className="flame-icon">
+                  <img src="/flame.svg" alt="flame" />
+                </span>
                 <span className="streak-number">{habit.streak}</span>
               </div>
             </div>
