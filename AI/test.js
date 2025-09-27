@@ -1,11 +1,12 @@
 // test.js
-import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
 
 // Load environment variables from .env
 dotenv.config();
 
 const apiKey = process.env.GEMINI_API_KEY;
+const modelName = process.env.GEMINI_MODEL
 
 // Safety check
 if (!apiKey) {
@@ -15,7 +16,7 @@ if (!apiKey) {
 
 // Initialize Gemini client
 const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+const model = genAI.getGenerativeModel({ model: modelName });
 
 async function test() {
   try {
