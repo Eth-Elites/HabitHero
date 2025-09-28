@@ -1,7 +1,12 @@
+import { ethers } from "ethers";
 import { useState } from "react";
 import { useUserRegistration, type UserData } from "../services/flowService";
 import { Button } from "./ui/button";
-
+//@ts-expect-error it exists
+import { contract_abi, contract_byte_code } from "../../utils/contract.js";
+const { ethereum } = window as {
+  ethereum?: { request: (args: { method: string }) => Promise<string[]> };
+};
 interface UserRegistrationFormProps {
   onRegistrationComplete?: () => void;
   onCancel?: () => void;
@@ -18,9 +23,50 @@ export function UserRegistrationForm({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [Address, setAddress] = useState("");
 
   const { registerUser } = useUserRegistration();
+  const connectWallet = async () => {
+    try {
+      if (!ethereum) return alert("Please install Metamask");
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const _address = accounts[0];
+      setAddress(_address);
+    } catch (error) {
+      console.log(error);
 
+      throw new Error("No ethereum object");
+    }
+  };
+
+  async function deployContract(name: string, symbol: string) {
+    if (!ethereum) throw new Error("No wallet found");
+
+    try {
+      // 1. Connect to MetaMask
+      const provider = new ethers.BrowserProvider(ethereum);
+      const signer = await provider.getSigner();
+
+      // 2. Prepare the factory with signer
+      const factory = new ethers.ContractFactory(
+        contract_abi,
+        contract_byte_code,
+        signer
+      );
+
+      // 3. Deploy
+      const contract = await factory.deploy(name, symbol);
+
+      // 4. Wait for confirmation
+      await contract.waitForDeployment();
+
+      console.log(contract.target, "contract address"); // contract address
+    } catch {
+      setError("Error deploying contract");
+    }
+  }
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -52,6 +98,7 @@ export function UserRegistrationForm({
 
       const transactionId = await registerUser(formData);
       console.log("Registration transaction ID:", transactionId);
+      await deployContract(Address, formData.name);
 
       setSuccess(true);
       setTimeout(() => {
@@ -87,6 +134,26 @@ export function UserRegistrationForm({
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
         Complete Your Registration
       </h2>
+      <div className="form-group">
+        <div className="mb-4 p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-lg font-semibold mb-2">Connect MetaMask</h3>
+          {!Address ? (
+            <button
+              onClick={connectWallet}
+              className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+            >
+              🦊 Connect MetaMask
+            </button>
+          ) : (
+            <div className="text-green-600">
+              <p className="font-medium">✅ Connected to MetaMask</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Address: {Address.slice(0, 6)}...{Address.slice(-4)}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHabitNFT } from "../../services/flowService";
@@ -6,8 +5,7 @@ import {
   ipfsService,
   type IPFSUploadResponse,
 } from "../../services/ipfsService";
-//@ts-expect-error it exists
-import { contract_abi, contract_byte_code } from "../../../utils/contract.js";
+
 export function CreateHabitScreen() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -23,81 +21,36 @@ export function CreateHabitScreen() {
   const [ipfsUrl, setIpfsUrl] = useState<string | null>(null);
   const { isPending } = useHabitNFT();
 
-  const [Address, setAddress] = useState("");
-  const [contractAddress, setContractAddress] = useState();
-  const { ethereum } = window as {
-    ethereum?: { request: (args: { method: string }) => Promise<string[]> };
-  };
-  console.log(ethereum);
+  // async function deployContract(name: string, symbol: string) {
+  //   if (!ethereum) throw new Error("No wallet found");
 
-  const connectWallet = async () => {
-    try {
-      if (!ethereum) return alert("Please install Metamask");
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      setAddress(accounts[0]);
-    } catch (error) {
-      console.log(error);
+  //   try {
+  //     // 1. Connect to MetaMask
+  //     const provider = new ethers.BrowserProvider(ethereum);
+  //     const signer = await provider.getSigner();
 
-      throw new Error("No ethereum object");
-    }
-  };
+  //     // 2. Prepare the factory with signer
+  //     const factory = new ethers.ContractFactory(
+  //       contract_abi,
+  //       contract_byte_code,
+  //       signer
+  //     );
 
-  // const deployContract = async (
-  //   title: string,
-  //   nickName: string
-  // ) => {
-  //   //@ts-expect-error it exists
-  //   const factory = new ethers.ContractFactory(contract_abi, contract_byte_code, Address);
-  // const contract = await factory.deploy(title, nickName); // This already waits for deployment
-  // //@ts-expect-error it exists
-  // setContractAddress(contract.target)
+  //     // 3. Deploy
+  //     const contract = await factory.deploy(name, symbol);
+
+  //     // 4. Wait for confirmation
+  //     await contract.waitForDeployment();
+
+  //     //@ts-expect-error it exists
+  //     setContractAddress(contract.target); // contract address
+  //     setCurrentStep(2);
+  //   } catch {
+  //     setError("Error deploying contract");
+  //   }
   // }
-  async function deployContract(name: string, symbol: string) {
-    if (!ethereum) throw new Error("No wallet found");
 
-    try {
-      // 1. Connect to MetaMask
-      const provider = new ethers.BrowserProvider(ethereum);
-      const signer = await provider.getSigner();
-
-      // 2. Prepare the factory with signer
-      const factory = new ethers.ContractFactory(
-        contract_abi,
-        contract_byte_code,
-        signer
-      );
-
-      // 3. Deploy
-      const contract = await factory.deploy(name, symbol);
-
-      // 4. Wait for confirmation
-      await contract.waitForDeployment();
-
-      //@ts-expect-error it exists
-      setContractAddress(contract.target); // contract address
-      setCurrentStep(2);
-    } catch {
-      setError("Error deploying contract");
-    }
-  }
-
-  const handleNextStep = async () => {
-    if (habitTitle.trim()) {
-      try {
-        const txId = await deployContract(habitTitle, habitTitle);
-        console.log("Contract deployed at address:", txId);
-      } catch (err) {
-        console.error("Error creating habit:", err);
-        setError(err instanceof Error ? err.message : "Failed to create habit");
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      setError("Please enter a habit title");
-    }
-  };
+  const handleNextStep = async () => {};
 
   const handlePreviousStep = () => {
     setCurrentStep(1);
@@ -210,29 +163,6 @@ export function CreateHabitScreen() {
       <div className="create-habit-form">
         {currentStep === 1 && (
           <>
-            {/* Step 1: MetaMask Connection */}
-            <div className="form-group">
-              <div className="mb-4 p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold mb-2">Connect MetaMask</h3>
-                {!Address ? (
-                  <button
-                    onClick={connectWallet}
-                    className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
-                  >
-                    🦊 Connect MetaMask
-                  </button>
-                ) : (
-                  <div className="text-green-600">
-                    <p className="font-medium">✅ Connected to MetaMask</p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Address: {Address.slice(0, 6)}...{Address.slice(-4)}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Step 1: Habit Title */}
             <div className="form-group">
               <label className="form-label">
                 What habit would you like to build?
