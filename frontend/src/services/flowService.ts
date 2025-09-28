@@ -29,6 +29,8 @@ transaction(name: String, email: String, gender: String) {
 }
 `;
 
+const User_address = localStorage.getItem("user_address");
+
 const GET_USER_SCRIPT = `
 import UserRegV2 from ${USER_REG_CONTRACT}
 

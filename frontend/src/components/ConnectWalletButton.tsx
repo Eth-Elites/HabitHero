@@ -20,6 +20,7 @@ export function ConnectWalletButton({ className }: ConnectWalletButtonProps) {
   useEffect(() => {
     if (user?.loggedIn) {
       setIsConnecting(false);
+      localStorage.setItem("user_address", user.addr || "");
     } else if (isConnecting) {
       const timeout = setTimeout(() => {
         setIsConnecting(false);
