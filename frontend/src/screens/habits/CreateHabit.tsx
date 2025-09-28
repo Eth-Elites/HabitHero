@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHabitNFT } from "../../services/flowService";
-import {
-  ipfsService,
-  type IPFSUploadResponse,
-} from "../../services/ipfsService";
+// import {
+//   ipfsService,
+//   type IPFSUploadResponse,
+// } from "../../services/ipfsService";
 //@ts-expect-error it exists
 import { contract_abi } from "../../../utils/contract.js";
 export function CreateHabitScreen() {
@@ -71,7 +71,7 @@ export function CreateHabitScreen() {
   };
 
   const getAllHabits = async () => {
-    console.log("get al ...............")
+    console.log("get al ...............");
     try {
       const contract = await getHabitContract();
       if (!contract) {
@@ -80,14 +80,14 @@ export function CreateHabitScreen() {
 
       const tx = await contract.getAllNFTs();
       console.log("Transaction sent:", tx.hash);
-      console.log("tx", tx)
+      console.log("tx", tx);
 
       const receipt = await tx.wait(); // wait for mining
       console.log("Transaction confirmed:", receipt);
     } catch (error) {
       console.error("Failed to fetch NFTs:", error);
     }
-  }
+  };
 
   const handleCreateHabit = async () => {
     if (!habitTitle.trim() || !habitDescription.trim() || !selectedFrequency) {
@@ -224,25 +224,29 @@ export function CreateHabitScreen() {
           </label>
           <div className="frequency-buttons">
             <button
-              className={`frequency-btn ${selectedFrequency === "Daily" ? "selected" : ""
-                }`}
+              className={`frequency-btn ${
+                selectedFrequency === "Daily" ? "selected" : ""
+              }`}
               onClick={() => setSelectedFrequency("Daily")}
             >
               Daily
             </button>
             <button
-              className={`frequency-btn ${selectedFrequency === "Weekly" ? "selected" : ""
-                }`}
+              className={`frequency-btn ${
+                selectedFrequency === "Weekly" ? "selected" : ""
+              }`}
               onClick={() => {
-                console.log("hi")
+                console.log("hi");
                 getAllHabits();
-                setSelectedFrequency("Weekly")}}
+                setSelectedFrequency("Weekly");
+              }}
             >
               Weekly
             </button>
             <button
-              className={`frequency-btn ${selectedFrequency === "Monthly" ? "selected" : ""
-                }`}
+              className={`frequency-btn ${
+                selectedFrequency === "Monthly" ? "selected" : ""
+              }`}
               onClick={() => setSelectedFrequency("Monthly")}
             >
               Monthly
