@@ -1,5 +1,6 @@
-import { Connect, useFlowCurrentUser } from "@onflow/react-sdk";
+import { useFlowCurrentUser } from "@onflow/react-sdk";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ConnectWalletButton } from "./components/ConnectWalletButton";
 
 interface AppLayout {
   children: React.ReactNode;
@@ -17,8 +18,8 @@ export default function AppLayout({ children }: AppLayout) {
 
   return (
     <div className="mobile-app">
-      <div className="flex items-center justify-between p-4">
-        {location.pathname !== "/" && <Connect />}
+      <div className="flex items-center justify-end p-4">
+        {location.pathname !== "/" && !user?.addr && <ConnectWalletButton />}
         {user?.loggedIn && (
           <button
             onClick={handleDisconnect}

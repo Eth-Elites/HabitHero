@@ -9,7 +9,6 @@ interface UserRegistrationFormProps {
 
 export function UserRegistrationForm({
   onRegistrationComplete,
-  onCancel,
 }: UserRegistrationFormProps) {
   const [formData, setFormData] = useState<UserData>({
     name: "",
@@ -165,17 +164,6 @@ export function UserRegistrationForm({
           >
             {isLoading ? "Registering..." : "Complete Registration"}
           </Button>
-
-          {onCancel && (
-            <Button
-              type="button"
-              onClick={onCancel}
-              variant="outline"
-              className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </Button>
-          )}
         </div>
       </form>
 
