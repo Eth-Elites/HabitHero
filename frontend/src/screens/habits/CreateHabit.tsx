@@ -175,7 +175,6 @@ export function CreateHabitScreen() {
                 onChange={(e) => setHabitTitle(e.target.value)}
                 autoFocus
               />
-              <span>contract address: {contractAddress} </span>
             </div>
           </>
         )}
