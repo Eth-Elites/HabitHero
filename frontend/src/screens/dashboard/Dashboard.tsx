@@ -1,11 +1,52 @@
 import { useFlowCurrentUser } from "@onflow/react-sdk";
-import { useState } from "react";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+//@ts-expect-error it exists
+import { contract_abi } from "../../../utils/contract.js";
 
 export function DashboardScreen() {
   const { user } = useFlowCurrentUser();
   const [activeTab, setActiveTab] = useState("Daily");
+
+  const { ethereum } = window as {
+    ethereum?: { request: (args: { method: string }) => Promise<string[]> };
+  };
   const navigate = useNavigate();
+  const contractAddress = localStorage.getItem("contract_address");
+  const getHabitContract = async () => {
+    try {
+      console.log("contract_address", contractAddress);
+      if (!contractAddress) throw new Error("Contract address not set");
+      if (!ethereum) throw new Error("Ethereum object not found");
+
+      const provider = new ethers.BrowserProvider(ethereum);
+      const signer = await provider.getSigner();
+
+      return new ethers.Contract(contractAddress, contract_abi, signer);
+    } catch (error) {
+      console.error("Failed to get contract:", error);
+      return null;
+    }
+  };
+  const getAllHabits = async () => {
+  console.log("get al ...............")
+  try {
+    const contract = await getHabitContract();
+    if (!contract) {
+      throw new Error("Habit contract not initialized");
+    }
+
+    // Directly get result (no tx.hash, no tx.wait)
+    const nfts = await contract.getAllNFTs();
+    console.log("Fetched NFTs:", nfts);
+
+    // you can now set state
+    // setHabits(nfts);
+  } catch (error) {
+    console.error("Failed to fetch NFTs:", error);
+  }
+}
 
   const habits = [
     {
@@ -44,6 +85,9 @@ export function DashboardScreen() {
   const totalHabits = 10;
   const progressPercentage = (completedHabits / totalHabits) * 100;
 
+  // useEffect(() => {
+  //   getAllHabits();
+  // }, []);
   return (
     <div className="dashboard-container">
       {/* User Profile and Progress Section */}
@@ -95,7 +139,11 @@ export function DashboardScreen() {
           </button>
           <button
             className={`nav-tab ${activeTab === "Weekly" ? "active" : ""}`}
-            onClick={() => setActiveTab("Weekly")}
+            onClick={() => {
+              setActiveTab("Weekly")
+
+              getAllHabits()
+            }}
           >
             Weekly
           </button>
