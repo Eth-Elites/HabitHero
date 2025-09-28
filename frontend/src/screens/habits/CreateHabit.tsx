@@ -8,7 +8,6 @@ import {
 
 export function CreateHabitScreen() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
   const [habitTitle, setHabitTitle] = useState("");
   const [habitDescription, setHabitDescription] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState<
@@ -50,13 +49,6 @@ export function CreateHabitScreen() {
   //   }
   // }
 
-  const handleNextStep = async () => {};
-
-  const handlePreviousStep = () => {
-    setCurrentStep(1);
-    setError(null);
-  };
-
   const handleCreateHabit = async () => {
     if (!habitTitle.trim() || !habitDescription.trim() || !selectedFrequency) {
       setError("Please fill in all fields before creating the habit");
@@ -90,8 +82,8 @@ export function CreateHabitScreen() {
     }
   };
 
-  const isStep1Valid = habitTitle.trim();
-  const isStep2Valid = habitDescription.trim() && selectedFrequency;
+  const isFormValid =
+    habitTitle.trim() && habitDescription.trim() && selectedFrequency;
 
   if (success) {
     return (
@@ -146,89 +138,67 @@ export function CreateHabitScreen() {
         <button className="back-button" onClick={() => navigate("/dashboard")}>
           ←
         </button>
-        <div className="flex gap-2 items-center">
-          <h1 className="create-habit-title">Create Habit</h1>
-          <div className="step-indicator">
-            <span className={`step ${currentStep >= 1 ? "active" : ""}`}>
-              1
-            </span>
-            <span className={`step ${currentStep >= 2 ? "active" : ""}`}>
-              2
-            </span>
-          </div>
-        </div>
+        <h1 className="create-habit-title">Create Habit</h1>
       </div>
 
       {/* Form */}
       <div className="create-habit-form">
-        {currentStep === 1 && (
-          <>
-            <div className="form-group">
-              <label className="form-label">
-                What habit would you like to build?
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g., Drink 8 glasses of water daily"
-                value={habitTitle}
-                onChange={(e) => setHabitTitle(e.target.value)}
-                autoFocus
-              />
-              <span>contract address: {contractAddress} </span>
-            </div>
-          </>
-        )}
+        <div className="form-group">
+          <label className="form-label">
+            What habit would you like to build?
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="e.g., Drink 8 glasses of water daily"
+            value={habitTitle}
+            onChange={(e) => setHabitTitle(e.target.value)}
+            autoFocus
+          />
+        </div>
 
-        {currentStep === 2 && (
-          <>
-            {/* Step 2: Description and Frequency */}
-            <div className="form-group">
-              <label className="form-label">Habit Description</label>
-              <textarea
-                className="form-textarea"
-                placeholder="Describe your habit in more detail..."
-                value={habitDescription}
-                onChange={(e) => setHabitDescription(e.target.value)}
-                rows={4}
-                autoFocus
-              />
-            </div>
+        <div className="form-group">
+          <label className="form-label">Habit Description</label>
+          <textarea
+            className="form-textarea"
+            placeholder="Describe your habit in more detail..."
+            value={habitDescription}
+            onChange={(e) => setHabitDescription(e.target.value)}
+            rows={4}
+          />
+        </div>
 
-            {/* Streak Reset Options */}
-            <div className="form-group">
-              <label className="form-label">
-                How often will you do this habit?
-              </label>
-              <div className="frequency-buttons">
-                <button
-                  className={`frequency-btn ${
-                    selectedFrequency === "Daily" ? "selected" : ""
-                  }`}
-                  onClick={() => setSelectedFrequency("Daily")}
-                >
-                  Daily
-                </button>
-                <button
-                  className={`frequency-btn ${
-                    selectedFrequency === "Weekly" ? "selected" : ""
-                  }`}
-                  onClick={() => setSelectedFrequency("Weekly")}
-                >
-                  Weekly
-                </button>
-                <button
-                  className={`frequency-btn ${
-                    selectedFrequency === "Monthly" ? "selected" : ""
-                  }`}
-                  onClick={() => setSelectedFrequency("Monthly")}
-                >
-                  Monthly
-                </button>
-              </div>
-            </div>
-          </>
-        )}
+        <div className="form-group">
+          <label className="form-label">
+            How often will you do this habit?
+          </label>
+          <div className="frequency-buttons">
+            <button
+              className={`frequency-btn ${
+                selectedFrequency === "Daily" ? "selected" : ""
+              }`}
+              onClick={() => setSelectedFrequency("Daily")}
+            >
+              Daily
+            </button>
+            <button
+              className={`frequency-btn ${
+                selectedFrequency === "Weekly" ? "selected" : ""
+              }`}
+              onClick={() => setSelectedFrequency("Weekly")}
+            >
+              Weekly
+            </button>
+            <button
+              className={`frequency-btn ${
+                selectedFrequency === "Monthly" ? "selected" : ""
+              }`}
+              onClick={() => setSelectedFrequency("Monthly")}
+            >
+              Monthly
+            </button>
+          </div>
+        </div>
 
         {/* Error Display */}
         {error && (
@@ -240,33 +210,13 @@ export function CreateHabitScreen() {
 
       {/* Navigation Buttons */}
       <div className="create-button-container">
-        {currentStep === 1 ? (
-          <button
-            className={`create-habit-btn ${isStep1Valid ? "active" : ""}`}
-            onClick={handleNextStep}
-            disabled={!isStep1Valid}
-          >
-            Next
-          </button>
-        ) : (
-          <div className="button-group">
-            <button
-              className="create-habit-btn secondary"
-              onClick={handlePreviousStep}
-            >
-              Back
-            </button>
-            <button
-              className={`create-habit-btn ${isStep2Valid ? "active" : ""}`}
-              onClick={handleCreateHabit}
-              disabled={
-                !isStep2Valid || isLoading || isPending || currentStep !== 2
-              }
-            >
-              {isLoading || isPending ? "Uploading to IPFS..." : "Create Habit"}
-            </button>
-          </div>
-        )}
+        <button
+          className={`create-habit-btn ${isFormValid ? "active" : ""}`}
+          onClick={handleCreateHabit}
+          disabled={!isFormValid || isLoading || isPending}
+        >
+          {isLoading || isPending ? "Uploading to IPFS..." : "Create Habit"}
+        </button>
       </div>
     </div>
   );
