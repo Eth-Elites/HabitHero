@@ -63,6 +63,10 @@ export function UserRegistrationForm({
       await contract.waitForDeployment();
 
       console.log(contract.target, "contract address"); // contract address
+      const contract_address = contract.target || "";
+      if (contract_address) {
+        localStorage.setItem("contract_address", contract_address as string);
+      }
     } catch {
       setError("Error deploying contract");
     }

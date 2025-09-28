@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHabitNFT } from "../../services/flowService";
@@ -67,6 +68,8 @@ export function CreateHabitScreen() {
       console.log("IPFS upload successful:", uploadResult);
       setIpfsHash(uploadResult.data.hash);
       setIpfsUrl(uploadResult.data.public_url);
+
+      const contract_address = localStorage.getItem("contract_address");
 
       // Here you can add additional logic to create the habit NFT with the IPFS hash
       // For now, we'll just show success
@@ -143,24 +146,19 @@ export function CreateHabitScreen() {
 
       {/* Form */}
       <div className="create-habit-form">
-        {currentStep === 1 && (
-          <>
-            <div className="form-group">
-              <label className="form-label">
-                What habit would you like to build?
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g., Drink 8 glasses of water daily"
-                value={habitTitle}
-                onChange={(e) => setHabitTitle(e.target.value)}
-                autoFocus
-              />
-              <span>contract address: {contractAddress} </span>
-            </div>
-          </>
-        )}
+        <div className="form-group">
+          <label className="form-label">
+            What habit would you like to build?
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="e.g., Drink 8 glasses of water daily"
+            value={habitTitle}
+            onChange={(e) => setHabitTitle(e.target.value)}
+            autoFocus
+          />
+        </div>
 
         <div className="form-group">
           <label className="form-label">Habit Description</label>
